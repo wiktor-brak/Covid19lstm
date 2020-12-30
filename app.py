@@ -1,5 +1,5 @@
 import dash
-from apps import Info, Monthly, Prediction
+from apps import Monthly, Prediction
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
@@ -8,8 +8,6 @@ from dash.dependencies import Input, Output
 application = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = application.server
 # application.config.suppress_callback_exceptions = True
-
-
 
 
 SIDEBAR_STYLE = {
@@ -46,8 +44,7 @@ sidebar = html.Div(
                 html.Hr(),
                 dcc.Link("COVID-19 Monthly cases", href="/apps/Monthly", className="btn btn-secondary",
                          style={"marginBottom": 20}),
-                html.Hr(),
-                dcc.Link("COVID-19 Country info", href="/apps/Info", className="btn btn-secondary"),
+
             ],
             vertical=True,
             pills=True,
@@ -67,14 +64,12 @@ application.layout = html.Div([
 
 
 @application.callback(Output('page-content', 'children'),
-              [Input('url', 'pathname')])
+                      [Input('url', 'pathname')])
 def display_page(pathname):
     if pathname == '/':
         return sidebar
     elif pathname == '/apps/Prediction':
         return Prediction.layout
-    elif pathname == '/apps/Info':
-        return Info.layout
     elif pathname == '/apps/Monthly':
         return Monthly.layout
     else:
@@ -83,4 +78,3 @@ def display_page(pathname):
 
 if __name__ == '__main__':
     application.run_server(debug=True)
-
