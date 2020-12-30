@@ -10,6 +10,8 @@ from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import LSTM
 
 
+
+
 import plotly.graph_objs as go
 import dash_core_components as dcc
 import dash_html_components as html
@@ -115,7 +117,7 @@ plot_layout = go.Layout(
     height=700
 )
 
-# fig = go.Figure(data=plot_data, layout=plot_layout)
+fig = go.Figure(data=plot_data, layout=plot_layout)
 # fig.show()
 
 layout = html.Div(
