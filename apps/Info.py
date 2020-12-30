@@ -4,7 +4,7 @@ import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import pandas as pd
 import dash
-from app import app
+from app import application
 
 
 pd.set_option("display.max_rows", 1000)
@@ -185,7 +185,7 @@ tab7_content = dbc.Card(
 )
 
 
-@app.callback(
+@application.callback(
     dash.dependencies.Output('dd-output-container', 'figure'),
     [dash.dependencies.Input('switch-dropdown', 'value'),
      dash.dependencies.Input('countries-dropdown', 'value')])
@@ -198,7 +198,7 @@ def update_output(value_nt, value_ct):
     return go.Figure(fig)
 
 
-@app.callback(
+@application.callback(
     dash.dependencies.Output('deathrate-output', 'children'),
     [dash.dependencies.Input('countries-dropdown', 'value')])
 def update_outputDeathRate(value):
@@ -210,7 +210,7 @@ def update_outputDeathRate(value):
     return returnString
 
 
-@app.callback(
+@application.callback(
     dash.dependencies.Output('aged-output', 'children'),
     [dash.dependencies.Input('countries-dropdown', 'value')])
 def update_outputAged(value):
@@ -220,7 +220,7 @@ def update_outputAged(value):
     return "Aged 65 and older: " + val + "%"
 
 
-@app.callback(
+@application.callback(
     dash.dependencies.Output('population', 'children'),
     [dash.dependencies.Input('countries-dropdown', 'value')])
 def update_outputPopulation(value):
@@ -229,7 +229,7 @@ def update_outputPopulation(value):
     return "Population: " + str(int(po))
 
 
-@app.callback(
+@application.callback(
     dash.dependencies.Output('median_age', 'children'),
     [dash.dependencies.Input('countries-dropdown', 'value')])
 def update_outputMedianAge(value):
@@ -239,7 +239,7 @@ def update_outputMedianAge(value):
     return "Median age: " + val
 
 
-@app.callback(
+@application.callback(
     dash.dependencies.Output('extreme_poverty', 'children'),
     [dash.dependencies.Input('countries-dropdown', 'value')])
 def update_outputExtremePoverty(value):
@@ -249,7 +249,7 @@ def update_outputExtremePoverty(value):
     return "Extreme poverty: " + val + "%"
 
 
-@app.callback(
+@application.callback(
     dash.dependencies.Output('male_smokers', 'children'),
     [dash.dependencies.Input('countries-dropdown', 'value')])
 def update_outputMaleSmokers(value):
@@ -259,7 +259,7 @@ def update_outputMaleSmokers(value):
     return "Male smokers: " + val + "%"
 
 
-@app.callback(
+@application.callback(
     dash.dependencies.Output('female_smokers', 'children'),
     [dash.dependencies.Input('countries-dropdown', 'value')])
 def update_outputFemaleSmokers(value):
@@ -269,7 +269,7 @@ def update_outputFemaleSmokers(value):
     return "Female smokers: " + val + "%"
 
 
-@app.callback(
+@application.callback(
     dash.dependencies.Output("popover", "is_open"),
     [dash.dependencies.Input("popover-target", "n_clicks")],
     [dash.dependencies.State("popover", "is_open")],
@@ -280,7 +280,7 @@ def toggle_popover(n, is_open):
     return is_open
 
 
-@app.callback(dash.dependencies.Output("content", "children"),
+@application.callback(dash.dependencies.Output("content", "children"),
               [dash.dependencies.Input("tabs", "active_tab")])
 def switch_tab(at):
     if at == "tab-1":

@@ -5,7 +5,7 @@ import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
 from dash.dependencies import Input, Output
-from app import app
+from app import application
 
 
 SIDEBAR_STYLE = {
@@ -54,7 +54,7 @@ sidebar = html.Div(
 
 content = html.Div(id="page-content", style=CONTENT_STYLE)
 
-app.layout = html.Div([
+application.layout = html.Div([
     dcc.Location(id='url', refresh=False),
     sidebar,
     content,
@@ -62,7 +62,7 @@ app.layout = html.Div([
 )
 
 
-@app.callback(Output('page-content', 'children'),
+@application.callback(Output('page-content', 'children'),
               [Input('url', 'pathname')])
 def display_page(pathname):
     if pathname == '/':
