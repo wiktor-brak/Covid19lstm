@@ -63,17 +63,17 @@ application.layout = html.Div([
 )
 
 
-@application.callback(Output('page-content', 'children'),
-                      [Input('url', 'pathname')])
-def display_page(pathname):
-    if pathname == '/':
-        return sidebar
-    elif pathname == '/apps/Prediction':
-        return Prediction.layout
-    elif pathname == '/apps/Monthly':
-        return Monthly.layout
-    else:
-        return '404'
+# @application.callback(Output('page-content', 'children'),
+#                       [Input('url', 'pathname')])
+# def display_page(pathname):
+#     if pathname == '/':
+#         return sidebar
+#     elif pathname == '/apps/Prediction':
+#         return Prediction.layout
+#     elif pathname == '/apps/Monthly':
+#         return Monthly.layout
+#     else:
+#         return '404'
 
 
 if __name__ == '__main__':
