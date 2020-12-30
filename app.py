@@ -7,7 +7,7 @@ from dash.dependencies import Input, Output
 
 application = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 server = application.server
-application.config.suppress_callback_exceptions = True
+# application.config.suppress_callback_exceptions = True
 
 
 
@@ -80,7 +80,7 @@ def display_page(pathname):
     else:
         return '404'
 
-#
-# if __name__ == '__main__':
-#     app.run_server(debug=True)
+
+if __name__ == '__main__':
+    application.run_server(debug=True)
 
