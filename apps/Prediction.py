@@ -9,18 +9,18 @@ from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import LSTM
 
-
-
-
 import plotly.graph_objs as go
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_bootstrap_components as dbc
 
 import datetime
+import os
 
 url = 'https://raw.githubusercontent.com/owid/covid-19-data/master/public/data/owid-covid-data.csv'
 df = pd.read_csv(url)
+location = 'World'
+savePath = rf'~/PycharmProjects/Covid19lstm/archive/Predictions{location}{datetime.date.today()}.csv'
 
 
 class Predict:
@@ -35,21 +35,22 @@ class Predict:
     def setLocation(self, location):
         self.df = self.df[self.df.location == location]
 
-
     def preprocess(self):
         self.df = self.df.reset_index()
         self.df = self.df.drop(self.df.columns.difference(['date', 'new_cases']), axis=1)
         self.df = self.df.fillna(0.)
         self.df.drop(self.df.tail(1).index, inplace=True)
 
-    def addDate(self, numberOfDays):
-        for nDays in range(0, numberOfDays):
+    def addDate(self):
+        for nDays in range(0, self.n_input):
             nextDay = datetime.datetime.today() + datetime.timedelta(days=nDays)
             self.df = self.df.append({'date': nextDay.date(), 'new_cases': None}, ignore_index=True)
-        self.df['date'] = pd.to_datetime(self.df['date'])
+        self.df.loc[:, 'date'] = pd.to_datetime(self.df.loc[:, 'date'])
         self.df = self.df.set_index('date')
 
     def split(self):
+        self.preprocess()
+        self.addDate()
         train = self.df.iloc[:-7]
         test = self.df.iloc[-7:]
         return train, test
@@ -78,7 +79,12 @@ class Predict:
         current_batch = first_eval_batch.reshape((1, self.n_input, self.n_feature))
 
         for i in range(len(test)):
-            current_pred = model.predict(current_batch)[0]
+            current_pred_chunk1 = model.predict(current_batch)[0]
+            current_pred_chunk2 = model.predict(current_batch)[0]
+            current_pred_chunk3 = model.predict(current_batch)[0]
+            current_pred_chunk4 = model.predict(current_batch)[0]
+            current_pred = 0.25 * (
+                        current_pred_chunk1 + current_pred_chunk2 + current_pred_chunk3 + current_pred_chunk4)
             self.test_predictions.append(current_pred)
             current_batch = np.append(current_batch[:, 1:, :], [[current_pred]], axis=1)
 
@@ -86,17 +92,25 @@ class Predict:
 
 
 predict = Predict(df, 7, 1)
-predict.setLocation('Poland')
-predict.preprocess()
-predict.addDate(7)
+predict.setLocation(location)
 train, test = predict.split()
 scaled_train = predict.scale(train)
 train_generator = predict.generator(scaled_train)
 model = predict.predictionModel()
-model.fit(train_generator, epochs=5)
+model.fit(train_generator, epochs=1)
+
 test_predictions = predict.predictFuture()
 true_predictions = predict.scaler.inverse_transform(test_predictions)
-test['Predictions'] = true_predictions
+
+test.loc[:, 'Predictions'] = true_predictions
+test.loc[:, 'Predictions'] = list(map(lambda x: int(x), test.loc[:, 'Predictions']))
+
+merged = [train, test]
+concated = pd.concat(merged)
+if os.path.exists(savePath):
+    os.remove(savePath)
+
+concated.to_csv(savePath)
 
 plot_data = [
     go.Scatter(
@@ -106,7 +120,7 @@ plot_data = [
     ),
     go.Scatter(
         x=test.index,
-        y=test['Predictions'],
+        y=test.loc[:, 'Predictions'],
         name='Predicted future days'
     )
 
@@ -118,7 +132,7 @@ plot_layout = go.Layout(
 )
 
 fig = go.Figure(data=plot_data, layout=plot_layout)
-# fig.show()
+fig.show()
 
 layout = html.Div(
     [
@@ -134,7 +148,7 @@ layout = html.Div(
 
         dbc.Row(dbc.Col(html.Div(
             dcc.Graph(
-                id='example-graph',
+                id='main-graph',
                 figure=fig
             )
 
